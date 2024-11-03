@@ -1849,6 +1849,17 @@ requests = ">=2.26.0"
 blobfile = ["blobfile (>=2)"]
 
 [[package]]
+name = "tomli"
+version = "2.0.2"
+description = "A lil' TOML parser"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "tomli-2.0.2-py3-none-any.whl", hash = "sha256:2ebe24485c53d303f690b0ec092806a085f07af5a5aa1464f3931eec36caaa38"},
+    {file = "tomli-2.0.2.tar.gz", hash = "sha256:d46d457a85337051c36524bc5349dd91b1877838e2979ac5ced3e710ed8a60ed"},
+]
+
+[[package]]
 name = "tomlkit"
 version = "0.12.0"
 description = "Style preserving TOML library"
@@ -2037,4 +2048,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "53144f830e613e64985619519697f703fbb605643604a462e11fd583cb210016"
+content-hash = "c0b4d7e3e26332e5999ac8d6e91fd0806178f72a2a477d161e40f56edd244926"
