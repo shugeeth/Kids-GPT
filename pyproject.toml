@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "hello-stranger"
+name = "Kids-GPT"
 version = "0.1.0"
 description = ""
 authors = ["iamadhee <caeser.alfred@gmail.com>"]

@@ -27,22 +27,14 @@ def respond(user_input):
     # Format character_tabs as a Markdown string
     character_tabs_markdown = "\n".join(f"- {item}" for item in character_tabs)
 
-    return messages, "", character_tabs_markdown  # Return the formatted character_tabs string
-
-
-# Function to compute the image (for demonstration, we'll just return a placeholder URL)
-def compute_image():
-    # Replace this with actual image computation if available
-    computed_image_url = "https://via.placeholder.com/300"  # Placeholder for computed image
-    return computed_image_url
-
+    return messages, "", character_tabs_markdown
 
 with gr.Blocks() as demo:
     # Main layout with two columns
     with gr.Row():
         # Left side - Chat Interface
         with gr.Column(scale=3):
-            gr.Markdown("# Hello Stranger")
+            gr.Markdown("# Kids-GPT")
             chatbox = gr.Chatbot(messages, elem_id="chatbot", type="messages")
             user_input = gr.Textbox(
                 label="Ask me anything...",
@@ -50,7 +42,7 @@ with gr.Blocks() as demo:
             )
 
             # Placeholder for character tabs
-            character_tabs_display = gr.Markdown("### Items in a list")
+            character_tabs_display = gr.Markdown("### Characteristics")
 
             user_input.submit(respond, inputs=[user_input], outputs=[chatbox, user_input, character_tabs_display])
 

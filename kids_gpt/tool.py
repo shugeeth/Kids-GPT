@@ -37,7 +37,7 @@ def notify_dependents(email_subject: str, email_body: str, messages: Annotated[l
 
     with smtplib.SMTP(_smtp_server, _smtp_port) as server:
         server.starttls()
-        server.login(_username, os.getenv("TWILIO_SENDGRID_API_KEY"))
+        server.login(_username, os.getenv("SMTP_API_KEY"))
         server.send_message(msg)
         logger.info('Email sent successfully to recipient: {}'.format(_recipient))
         return 'Email sent successfully!'
