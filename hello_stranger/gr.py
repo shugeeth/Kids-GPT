@@ -54,15 +54,5 @@ with gr.Blocks() as demo:
 
             user_input.submit(respond, inputs=[user_input], outputs=[chatbox, user_input, character_tabs_display])
 
-        # Right side - Placeholder image with a button below it
-        with gr.Column(scale=1):
-            gr.Markdown("### Placeholder for an image")
-            image_display = gr.Image("https://via.placeholder.com/150", elem_id="placeholder_image",
-                                     label="Image Placeholder")
-
-            # Button to compute the image
-            compute_button = gr.Button("Compute Image")
-            compute_button.click(compute_image, inputs=None, outputs=image_display)
-
 # Launch the Gradio app
 demo.launch()
