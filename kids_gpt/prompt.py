@@ -33,7 +33,7 @@ Kid: *"I can’t get enough of chocolate chip cookies! They’re the best."*
 
 Use this approach to analyze any conversation provided to you, capturing the child’s interests, preferences, and personality traits that are subtly revealed through their responses.  
 You'll be provided with the conversation along with the characteristics identified so far. Your goal is to extract new characteristics or update the ones you already identified if needed.  
-Return the updated list of characteristics. Do not add any duplicate information that is already there.
+Return the updated list of characteristics. Do not add any duplicate information that is already there. Do not miss any unique characteristic / trait the kid might have.
 
 Currently Identified Characteristics: {current_characteristics}
 """

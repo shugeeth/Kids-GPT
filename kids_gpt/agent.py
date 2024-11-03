@@ -82,7 +82,7 @@ class Agent:
                 MessagesPlaceholder(variable_name="messages"),
             ]
         )
-        _extractor_llm = _prompt | self._llm(model="gpt-4o", temperature=0.5).bind_tools([modify_characteristics])
+        _extractor_llm = _prompt | self._llm(model="gpt-4o", temperature=0.8).bind_tools([modify_characteristics], tool_choice="required")
         _res = _extractor_llm.invoke({"messages": state["messages"]})
         for _tool_call in _res.additional_kwargs.get("tool_calls", []):
             tool_call_id = _tool_call["id"]
@@ -90,8 +90,7 @@ class Agent:
             tool_call_args["characteristics"] = state["characteristics"]
             modified_chars: ToolMessage = modify_characteristics.run(tool_input=tool_call_args, tool_call_id=tool_call_id)
             state["characteristics"] = modified_chars.content
-        logger.debug("Updated Characteristics:")
-        logger.debug(state["characteristics"])
+        logger.info("Updated Characteristics: {}".format(state["characteristics"]))
         return state
 
     def the_guardian(self, state: State):
@@ -103,7 +102,8 @@ class Agent:
 
     def run(self, msg: str, thread_id: uuid.UUID):
         config = {"configurable": {"thread_id": thread_id}}
-        return self.graph.invoke({
+        _res = self.graph.invoke({
                                     "messages": [HumanMessage(content=msg)]
                                     },
                                  config)
+        return _res
