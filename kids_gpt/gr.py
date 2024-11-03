@@ -1,16 +1,22 @@
 import uuid
+
 import gradio as gr
+
 from agent import Agent
 
 # Initialize agent
 agent_runnable = Agent()
 
 # Default messages at the start
-default_messages = [{"role": "assistant", "content": "Hello! How can I help you today?"}]
+default_messages = [
+    {"role": "assistant", "content": "Hello! How can I help you today?"}
+]
+
 
 def initialize_session():
     """Initializes a new session with fresh UUID and default messages."""
     return default_messages, uuid.uuid4()
+
 
 def respond(user_input, messages, thread_id):
     # Append user message to history
@@ -33,6 +39,7 @@ def respond(user_input, messages, thread_id):
     # Return updated messages, clear input box, character_tabs_markdown, and messages state
     return messages, "", character_tabs_markdown, messages
 
+
 with gr.Blocks() as demo:
     # Initialize session state for messages and thread_id
     messages_initial, thread_id_initial = initialize_session()
@@ -43,10 +50,12 @@ with gr.Blocks() as demo:
     with gr.Row():
         with gr.Column(scale=3):
             gr.Markdown("# Kids-GPT")
-            chatbox = gr.Chatbot(value=default_messages, elem_id="chatbot", type="messages")
+            chatbox = gr.Chatbot(
+                value=default_messages, elem_id="chatbot", type="messages"
+            )
             user_input = gr.Textbox(
                 label="Ask me anything...",
-                placeholder="Type your question here and press enter"
+                placeholder="Type your question here and press enter",
             )
 
             # Placeholder for character tabs
@@ -56,7 +65,7 @@ with gr.Blocks() as demo:
             user_input.submit(
                 respond,
                 inputs=[user_input, messages_state, thread_id_state],
-                outputs=[chatbox, user_input, character_tabs_display, messages_state]
+                outputs=[chatbox, user_input, character_tabs_display, messages_state],
             )
 
 # Launch the Gradio app

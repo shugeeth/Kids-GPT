@@ -1,37 +1,31 @@
 import json
-import os
 import uuid
 from typing import TypedDict, Annotated
 
-import requests
 from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.tools import tool, BaseTool
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import StateGraph, START, END, add_messages
+from langgraph.graph import StateGraph, END, add_messages
 from langgraph.graph.graph import CompiledGraph
-from langgraph.prebuilt import InjectedState
-from openai import OpenAI
-from pydantic import BaseModel
-from pydantic.v1 import UUID4
-from typing_extensions import Literal
-from langchain_core.tools.structured import StructuredTool
-from tool import modify_characteristics, notify_dependents
 from langgraph.prebuilt import create_react_agent
-from util import characteristics_reducer
-from logger_setup import logger
+from pydantic import BaseModel
 
+from logger_setup import logger
 from prompt import BUDDY_PROMPT, ANALYZER_PROMPT, GUARDIAN_PROMPT
+from tool import modify_characteristics, notify_dependents
+from util import characteristics_reducer
 
 load_dotenv()
 
 _checkpointer = MemorySaver()
 
+
 class State(TypedDict):
     messages: Annotated[list, add_messages]
     characteristics: Annotated[list[str], characteristics_reducer]
+
 
 class Character(BaseModel):
     characteristics: list[str]
@@ -78,32 +72,39 @@ class Agent:
             state["characteristics"] = []
         _prompt = ChatPromptTemplate.from_messages(
             [
-                SystemMessage(content=ANALYZER_PROMPT.format(current_characteristics="\n-".join(state["characteristics"]))),
+                SystemMessage(
+                    content=ANALYZER_PROMPT.format(
+                        current_characteristics="\n-".join(state["characteristics"])
+                    )
+                ),
                 MessagesPlaceholder(variable_name="messages"),
             ]
         )
-        _extractor_llm = _prompt | self._llm(model="gpt-4o", temperature=0.8).bind_tools([modify_characteristics], tool_choice="required")
+        _extractor_llm = _prompt | self._llm(
+            model="gpt-4o", temperature=0.8
+        ).bind_tools([modify_characteristics], tool_choice="required")
         _res = _extractor_llm.invoke({"messages": state["messages"]})
         for _tool_call in _res.additional_kwargs.get("tool_calls", []):
             tool_call_id = _tool_call["id"]
             tool_call_args = json.loads(_tool_call["function"]["arguments"])
             tool_call_args["characteristics"] = state["characteristics"]
-            modified_chars: ToolMessage = modify_characteristics.run(tool_input=tool_call_args, tool_call_id=tool_call_id)
+            modified_chars: ToolMessage = modify_characteristics.run(
+                tool_input=tool_call_args, tool_call_id=tool_call_id
+            )
             state["characteristics"] = modified_chars.content
         logger.info("Updated Characteristics: {}".format(state["characteristics"]))
         return state
 
     def the_guardian(self, state: State):
-        _guardian_agent = create_react_agent(model=self._llm(model="gpt-4o", temperature=0.2),
-                                           state_modifier=GUARDIAN_PROMPT,
-                                           tools=[notify_dependents])
+        _guardian_agent = create_react_agent(
+            model=self._llm(model="gpt-4o", temperature=0.2),
+            state_modifier=GUARDIAN_PROMPT,
+            tools=[notify_dependents],
+        )
         _guardian_agent.invoke({"messages": state["messages"]})
         return state
 
     def run(self, msg: str, thread_id: uuid.UUID):
         config = {"configurable": {"thread_id": thread_id}}
-        _res = self.graph.invoke({
-                                    "messages": [HumanMessage(content=msg)]
-                                    },
-                                 config)
+        _res = self.graph.invoke({"messages": [HumanMessage(content=msg)]}, config)
         return _res
