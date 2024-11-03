@@ -15,6 +15,7 @@ from langgraph.graph.graph import CompiledGraph
 from langgraph.prebuilt import InjectedState
 from openai import OpenAI
 from pydantic import BaseModel
+from pydantic.v1 import UUID4
 from typing_extensions import Literal
 from langchain_core.tools.structured import StructuredTool
 
@@ -39,6 +40,7 @@ def modify_characteristics(operator: Literal["+", "-"], characteristic: str, cha
         characteristics.append(characteristic)
     elif operator == "-":
         characteristics.remove(characteristic)
+    characteristics = list(set([char.strip() for char in characteristics]))
     return characteristics
 
 class Agent:
@@ -46,23 +48,22 @@ class Agent:
 
     def __init__(self):
         _workflow = StateGraph(State)
+        _workflow.add_node("start", self.start)
         _workflow.add_node("engage_user", self.engage_user)
         _workflow.add_node("extract_characteristics", self.extract_characteristics)
-        _workflow.add_node("generate_image_prompt", self.generate_image_prompt)
-        _workflow.add_node("generate_image", self.generate_image)
-        _workflow.add_edge("engage_user", "extract_characteristics")
-        _workflow.add_conditional_edges("extract_characteristics",
-                                        lambda state: state["characteristics"].__len__() > 0,
-                                        {True: "generate_image_prompt", False: END})
-        _workflow.add_edge("generate_image_prompt", "generate_image")
+        _workflow.add_edge("start", "extract_characteristics")
+        _workflow.add_edge("start", "engage_user")
         _workflow.add_edge("engage_user", END)
-        _workflow.add_edge(START, "engage_user")
-        _workflow.set_entry_point("engage_user")
+        _workflow.add_edge("extract_characteristics", END)
+        _workflow.set_entry_point("start")
         self._workflow = _workflow
 
     @property
     def graph(self) -> CompiledGraph:
         return self._workflow.compile(checkpointer=_checkpointer)
+
+    def start(self, state: State):
+        return state
 
     def engage_user(self, state: State):
         _prompt = ChatPromptTemplate.from_messages(
@@ -80,13 +81,13 @@ class Agent:
             state["characteristics"] = []
         _prompt = ChatPromptTemplate.from_messages(
             [
-                SystemMessage(content=EXTRACT_CHARACTERISTICS_PROMPT),
+                SystemMessage(content=EXTRACT_CHARACTERISTICS_PROMPT.format(current_characteristics="\n-".join(state["characteristics"]))),
                 MessagesPlaceholder(variable_name="messages"),
             ]
-        ).partial(current_characteristics="\n-".join(state["characteristics"]))
-        _extractor_llm = _prompt | self._llm(model="gpt-4o", temperature=0.5).bind_tools([modify_characteristics], tool_choice="required")
+        )
+        _extractor_llm = _prompt | self._llm(model="gpt-4o", temperature=0.5).bind_tools([modify_characteristics])
         _res = _extractor_llm.invoke({"messages": state["messages"]})
-        for _tool_call in _res.additional_kwargs["tool_calls"]:
+        for _tool_call in _res.additional_kwargs.get("tool_calls", []):
             tool_call_id = _tool_call["id"]
             tool_call_args = json.loads(_tool_call["function"]["arguments"])
             tool_call_args["characteristics"] = state["characteristics"]
@@ -125,7 +126,8 @@ class Agent:
         with open("images/image.png", "wb") as f:
             f.write(image_data)
 
-    def run(self, msg: str, config: dict):
+    def run(self, msg: str, thread_id: uuid.UUID):
+        config = {"configurable": {"thread_id": thread_id}}
         return self.graph.invoke({
                                     "messages": [HumanMessage(content=msg)]
                                     },
@@ -133,10 +135,10 @@ class Agent:
 
 if __name__ == "__main__":
     agent = Agent()
-    _config = {"configurable": {"thread_id": uuid.uuid4()}}
+    thread_id = uuid.uuid4()
     while True:
         _msg = input("Ask: ")
-        res = agent.run(_msg, _config)
+        res = agent.run(_msg, thread_id=thread_id)
         print("="*10)
         print(res["messages"][-1].content)
         print("="*10)
