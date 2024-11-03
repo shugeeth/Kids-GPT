@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "hello-stranger"
+version = "0.1.0"
+description = ""
+authors = ["iamadhee <caeser.alfred@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+langgraph = "^0.2.44"
+langchain-openai = "^0.2.5"
+streamlit = "^1.39.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
