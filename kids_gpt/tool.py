@@ -9,7 +9,7 @@ from langgraph.prebuilt import InjectedState
 
 from logger_setup import logger
 
-_config = tomli.load(open("../config.toml", "rb"))
+_config = tomli.load(open("config.toml", "rb"))
 _smtp_server = _config["smtp"]["server"]
 _smtp_port = _config["smtp"]["port"]
 _username = _config["smtp"]["username"]
