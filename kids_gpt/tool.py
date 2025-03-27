@@ -3,19 +3,26 @@ import smtplib
 from email.mime.text import MIMEText
 from typing import Literal, Annotated
 
-import tomli
+import tomli, os
 from langchain_core.tools import tool
 from langgraph.prebuilt import InjectedState
 from langchain_core.runnables.config import RunnableConfig
 
 from logger_setup import logger
 
-_config = tomli.load(open("config.toml", "rb"))
-_smtp_server = _config["smtp"]["server"]
-_smtp_port = _config["smtp"]["port"]
-_username = _config["smtp"]["username"]
-_recipient = _config["smtp"]["recipient"]
-_from_email = _config["smtp"]["from_email"]
+# _config = tomli.load(open("config.toml", "rb"))
+# _smtp_server = _config["smtp"]["server"]
+# _smtp_port = _config["smtp"]["port"]
+# _username = _config["smtp"]["username"]
+# _recipient = _config["smtp"]["recipient"]
+# _from_email = _config["smtp"]["from_email"]
+
+# Receive secrets from os for HF Spaces
+_smtp_server = os.getenv["SMTP_SERVER"]
+_smtp_port = int(os.getenv["SMTP_PORT"])
+_username = os.getenv["SMTP_USERNAME"]
+_recipient = os.getenv["SMTP_DEFAULT_RECIPIENT"]
+_from_email = os.getenv["SMTP_FROM_EMAIL"]
 
 
 @tool
