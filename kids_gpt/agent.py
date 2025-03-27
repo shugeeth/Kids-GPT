@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from logger_setup import logger
 from prompt import BUDDY_PROMPT, ANALYZER_PROMPT, GUARDIAN_PROMPT
 from tool import modify_characteristics, notify_dependents
-from util import characteristics_reducer
+from util import characteristics_reducer, validate_email
 
 load_dotenv()
 
@@ -95,16 +95,20 @@ class Agent:
         logger.info("Updated Characteristics: {}".format(state["characteristics"]))
         return state
 
-    def the_guardian(self, state: State):
+    def the_guardian(self, state: State, config: dict):
+        # Example to retrieve config variables in node
+        # guardian_email = config.get("configurable", {}).get("guardian_email", None)
         _guardian_agent = create_react_agent(
             model=self._llm(model="gpt-4o", temperature=0.2),
             state_modifier=GUARDIAN_PROMPT,
             tools=[notify_dependents],
         )
-        _guardian_agent.invoke({"messages": state["messages"]})
+        _guardian_agent.invoke({
+            "messages": state["messages"]
+        })
         return state
 
-    def run(self, msg: str, thread_id: uuid.UUID):
-        config = {"configurable": {"thread_id": thread_id}}
+    def run(self, msg: str, guardian_email_input: Annotated[str, validate_email], thread_id: uuid.UUID):
+        config = {"configurable": {"thread_id": thread_id, "guardian_email": guardian_email_input}}
         _res = self.graph.invoke({"messages": [HumanMessage(content=msg)]}, config)
         return _res

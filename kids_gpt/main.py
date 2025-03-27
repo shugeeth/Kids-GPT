@@ -18,12 +18,12 @@ def initialize_session():
     return default_messages, uuid.uuid4()
 
 
-def respond(user_input, messages, thread_id):
+def respond(user_input, guardian_email_input, messages, thread_id):
     # Append user message to history
     messages.append({"role": "user", "content": user_input})
 
     # Get response from the agent
-    response = agent_runnable.run(user_input, thread_id=thread_id)
+    response = agent_runnable.run(user_input, guardian_email_input, thread_id=thread_id)
     ai_message = response["messages"][-1].content
     character_tabs = response["characteristics"]
 
@@ -40,7 +40,7 @@ def respond(user_input, messages, thread_id):
     return messages, "", character_tabs_markdown, messages
 
 
-with gr.Blocks() as demo:
+with gr.Blocks(title='SafeChat Junior') as demo:
     # Initialize session state for messages and thread_id
     messages_initial, thread_id_initial = initialize_session()
     messages_state = gr.State(messages_initial)  # Stores chat history
@@ -49,7 +49,18 @@ with gr.Blocks() as demo:
     # Main layout with two columns
     with gr.Row():
         with gr.Column(scale=3):
-            gr.Markdown("# Kids-GPT")
+            gr.Markdown(
+                """
+                # SafeChat Junior
+                
+                ### An AI-powered child wellness chatbot that counsels children, detects concerning behavior, summarizes conversations, and alerts guardians when needed.
+                """)
+            guardian_email_input = gr.Textbox(
+                label="Gaurdian Email",
+                elem_id="guardian_email",
+                type='email', 
+                value=""
+            )
             chatbox = gr.Chatbot(
                 value=default_messages, elem_id="chatbot", type="messages"
             )
@@ -64,7 +75,7 @@ with gr.Blocks() as demo:
             # Call respond function, passing in states for messages and thread_id
             user_input.submit(
                 respond,
-                inputs=[user_input, messages_state, thread_id_state],
+                inputs=[user_input, guardian_email_input, messages_state, thread_id_state],
                 outputs=[chatbox, user_input, character_tabs_display, messages_state],
             )
 

@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 kids_gpt/main.py
+python3.12 kids_gpt/main.py

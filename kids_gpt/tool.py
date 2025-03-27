@@ -6,6 +6,7 @@ from typing import Literal, Annotated
 import tomli
 from langchain_core.tools import tool
 from langgraph.prebuilt import InjectedState
+from langchain_core.runnables.config import RunnableConfig
 
 from logger_setup import logger
 
@@ -36,18 +37,22 @@ def modify_characteristics(
 def notify_dependents(
     email_subject: str,
     email_body: str,
-    messages: Annotated[list, InjectedState("messages")],
+    config: RunnableConfig,
 ):
-    """Use this tool when you want to notify something very important to the user's dependents."""
+    """Use this tool when you want to notify something very important to the user's dependents"""
 
-    msg = MIMEText(email_body)
-    msg["Subject"] = email_subject
-    msg["From"] = _from_email
-    msg["To"] = _recipient
+    guardian_email = config.get("configurable", {}).get("guardian_email", _recipient)
+    if guardian_email:
+        msg = MIMEText(email_body)
+        msg["Subject"] = email_subject
+        msg["From"] = _from_email
+        msg["To"] = guardian_email
 
-    with smtplib.SMTP(_smtp_server, _smtp_port) as server:
-        server.starttls()
-        server.login(_username, os.getenv("SMTP_API_KEY"))
-        server.send_message(msg)
-        logger.info("Email sent successfully to recipient: {}".format(_recipient))
-        return "Email sent successfully!"
+        logger.info("Initiating email to be sent. Guardian Email: {}".format(_recipient))
+
+        with smtplib.SMTP(_smtp_server, _smtp_port) as server:
+            server.starttls()
+            server.login(_username, os.getenv("SMTP_API_KEY"))
+            server.send_message(msg)
+            logger.info("Email sent successfully to recipient: {}".format(_recipient))
+            return "Email sent successfully!"
