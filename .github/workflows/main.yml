@@ -46,8 +46,21 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          # Remove .gitignore temporarily
+          mv .gitignore .gitignore_temp || true
+          
+          # Configure git
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add .env config.toml
+          
+          # Force add ignored files
+          git add -f .env config.toml
+          
+          # Commit changes
           git commit -m "Update configuration files" || echo "No changes to commit"
+          
+          # Force push to HF
           git push -f https://Shugeeth:$HF_TOKEN@huggingface.co/spaces/Shugeeth/safe-chat-junior.git main
+          
+          # Restore .gitignore
+          mv .gitignore_temp .gitignore || true
