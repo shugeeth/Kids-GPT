@@ -18,11 +18,11 @@ from logger_setup import logger
 # _from_email = _config["smtp"]["from_email"]
 
 # Receive secrets from os for HF Spaces
-_smtp_server = os.getenv["SMTP_SERVER"]
-_smtp_port = int(os.getenv["SMTP_PORT"])
-_username = os.getenv["SMTP_USERNAME"]
-_recipient = os.getenv["SMTP_DEFAULT_RECIPIENT"]
-_from_email = os.getenv["SMTP_FROM_EMAIL"]
+_smtp_server = os.getenv("SMTP_SERVER")
+_smtp_port = int(os.getenv("SMTP_PORT"))
+_username = os.getenv("SMTP_USERNAME")
+_recipient = os.getenv("SMTP_DEFAULT_RECIPIENT")
+_from_email = os.getenv("SMTP_FROM_EMAIL")
 
 
 @tool
