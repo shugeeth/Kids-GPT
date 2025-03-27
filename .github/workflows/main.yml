@@ -2,10 +2,8 @@ name: Sync to Hugging Face hub
 on:
   push:
     branches: [main]
-
   # to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
@@ -14,7 +12,42 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: git push -f https://Shugeeth:$HF_TOKEN@huggingface.co/spaces/Shugeeth/safe-chat-junior.git main
+      
+      - name: Create .env file
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SMTP_API_KEY: ${{ secrets.SMTP_API_KEY }}
+        run: |
+          echo "# Environment Configuration" > .env
+          echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
+          echo "SMTP_API_KEY=$SMTP_API_KEY" >> .env
+      
+      - name: Create config.toml file
+        env:
+          SMTP_FROM_EMAIL: ${{ secrets.SMTP_FROM_EMAIL }}
+          SMTP_DEFAULT_RECIPIENT: ${{ secrets.SMTP_RECIPIENT }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+        run: |
+          echo "# TOML Configuration File" > config.toml
+          echo "[smtp]" >> config.toml
+          echo "server = '$SMTP_SERVER'" >> config.toml
+          echo "port = 587" >> config.toml
+          echo "username = '$SMTP_USERNAME'" >> config.toml
+          echo "recipient = '$SMTP_DEFAULT_RECIPIENT'" >> config.toml
+          echo "from_email = '$SMTP_FROM_EMAIL'" >> config.toml
+      
+      - name: Push updated files to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .env config.toml
+          git commit -m "Update configuration files" || echo "No changes to commit"
+          git push -f https://Shugeeth:$HF_TOKEN@huggingface.co/spaces/Shugeeth/safe-chat-junior.git main
