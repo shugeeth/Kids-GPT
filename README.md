@@ -1,6 +1,6 @@
-# Kids-GPT
+# SafeChat Junior
 
-Kids-GPT is a GPT-4o powered AI assistant designed specifically for children. It is a great way for your child to use ChatGPT like AI assistant with parental control and monitoring.
+SafeChat Junior is a GPT-4o powered AI assistant designed specifically for children. It is a great way for your child to use ChatGPT like AI assistant with parental control and monitoring.
 
 ## Installation and Usage
 
