@@ -64,16 +64,25 @@ with gr.Blocks(title='SafeChat Junior') as demo:
             chatbox = gr.Chatbot(
                 value=default_messages, elem_id="chatbot", type="messages"
             )
-            user_input = gr.Textbox(
-                label="Ask me anything...",
-                placeholder="Type your question here and press enter",
-            )
+
+            with gr.Row():
+                user_input = gr.Textbox(
+                    label="Ask me anything...", 
+                    placeholder="Type your question here",
+                    scale=3  # Takes more horizontal space
+                )
+                submit_btn = gr.Button("Submit", scale=1)  # Proportional sizing
 
             # Placeholder for character tabs
             character_tabs_display = gr.Markdown("### Characteristics")
 
             # Call respond function, passing in states for messages and thread_id
             user_input.submit(
+                respond,
+                inputs=[user_input, guardian_email_input, messages_state, thread_id_state],
+                outputs=[chatbox, user_input, character_tabs_display, messages_state],
+            )
+            submit_btn.click(
                 respond,
                 inputs=[user_input, guardian_email_input, messages_state, thread_id_state],
                 outputs=[chatbox, user_input, character_tabs_display, messages_state],

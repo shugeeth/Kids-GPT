@@ -1,8 +1,8 @@
 ---
 title: "SafeChat Junior"
 emoji: "🚀"
-colorFrom: "pink"
-colorTo: "red"
+colorFrom: "blue"
+colorTo: "green"
 sdk: "gradio"
 sdk_version: "5.4.0"
 python_version: "3.12"

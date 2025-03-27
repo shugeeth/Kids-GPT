@@ -48,11 +48,11 @@ def notify_dependents(
         msg["From"] = _from_email
         msg["To"] = guardian_email
 
-        logger.info("Initiating email to be sent. Guardian Email: {}".format(_recipient))
+        logger.info("Initiating email to be sent. Guardian Email: {}".format(guardian_email))
 
         with smtplib.SMTP(_smtp_server, _smtp_port) as server:
             server.starttls()
             server.login(_username, os.getenv("SMTP_API_KEY"))
             server.send_message(msg)
-            logger.info("Email sent successfully to recipient: {}".format(_recipient))
+            logger.info("Email sent successfully to recipient: {}".format(guardian_email))
             return "Email sent successfully!"
