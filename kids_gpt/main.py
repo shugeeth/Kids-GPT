@@ -46,6 +46,13 @@ with gr.Blocks(title='SafeChat Junior') as demo:
     messages_state = gr.State(messages_initial)  # Stores chat history
     thread_id_state = gr.State(thread_id_initial)  # Stores unique session ID
 
+    # Optional: Add CSS for precise vertical alignment of button
+    demo.css = """
+    .gradio-container button {
+        align-self: center;
+    }
+    """
+
     # Main layout with two columns
     with gr.Row():
         with gr.Column(scale=3):
@@ -71,7 +78,7 @@ with gr.Blocks(title='SafeChat Junior') as demo:
                     placeholder="Type your question here",
                     scale=3  # Takes more horizontal space
                 )
-                submit_btn = gr.Button("Submit", scale=1)  # Proportional sizing
+                submit_btn = gr.Button("Submit", scale=1, size="lg")  # Proportional sizing
 
             # Placeholder for character tabs
             character_tabs_display = gr.Markdown("### Characteristics")
