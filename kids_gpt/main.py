@@ -80,4 +80,7 @@ with gr.Blocks(title='SafeChat Junior') as demo:
             )
 
 # Launch the Gradio app
-demo.launch()
+# demo.launch()
+
+# Modified launch for docker
+demo.launch(server_name="0.0.0.0", server_port=7860)

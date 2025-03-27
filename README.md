@@ -1,3 +1,15 @@
+---
+title: "SafeChat Junior"
+emoji: "🚀"
+colorFrom: "pink"
+colorTo: "red"
+sdk: "gradio"
+sdk_version: "5.4.0"
+python_version: "3.12"
+app_file: "kids_gpt/main.py"
+pinned: true
+---
+
 # SafeChat Junior
 
 SafeChat Junior is a GPT-4o powered AI assistant designed specifically for children. It is a great way for your child to use ChatGPT like AI assistant with parental control and monitoring.
