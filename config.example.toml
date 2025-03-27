@@ -1,6 +1,0 @@
-[smtp]
-server = "smtp.sendgrid.net" # Your SMTP server
-port = 587 # Your SMTP port
-username = "" # Your Username
-recipient = "" # The recipient's email, this is where the alert email will be sent to
-from_email = "" # The sender's email configured with your SMTP server
