@@ -46,7 +46,13 @@ def notify_dependents(
     email_body: str,
     config: RunnableConfig,
 ):
-    """Use this tool when you want to notify something very important to the user's dependents"""
+    """
+    Use this email notification tool exclusively for critical communications to user dependents. 
+    Craft a message that is clear, professional, and personalized, avoiding spam-like language. 
+    Ensure the content is concise, directly addresses the important matter. Maintain an authoritative yet calm tone, providing context that demonstrates communication legitimacy. 
+    Conclude the email with a clear attribution: 'This notification is sent by Safe Chat Junior.' 
+    The goal is to create a communication that feels important and trustworthy, compelling the recipient to take the message seriously without triggering spam filters.
+    """
 
     guardian_email = config.get("configurable", {}).get("guardian_email", _recipient)
     if guardian_email:
