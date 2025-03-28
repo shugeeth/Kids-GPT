@@ -56,36 +56,13 @@ def notify_dependents(
         msg["To"] = guardian_email
 
         logger.info(f"Initiating email to be sent.\nGuardian Email: {guardian_email}\nFrom: {_from_email}")
-        logger.info(_smtp_server)
-        logger.info(_smtp_port)
-        logger.info(_username)
-        logger.info(os.getenv("SMTP_API_KEY"))
 
         try:
-            logger.info('Outside With Block')
-            server = smtplib.SMTP(_smtp_server, _smtp_port)
-            logger.info('0000')
-            logger.info(server)
-            tls = server.starttls()
-            logger.info(f'1000: {tls}')
-            login = server.login(_username, os.getenv("SMTP_API_KEY"))
-            logger.info(f'2000: {login}')
-            mr = server.send_message(msg)
-            logger.info(f'3000: {mr}')
-            cl = server.close()
-            logger.info(f'4000: {cl}')
-            logger.info("Email sent successfully to recipient: {}".format(guardian_email))
-            return "Email sent successfully!"
-            # with smtplib.SMTP(_smtp_server, _smtp_port) as server:
-            #     logger.info('0000')
-            #     logger.info(server)
-            #     server.starttls()
-            #     logger.info(1000)
-            #     server.login(_username, os.getenv("SMTP_API_KEY"))
-            #     logger.info(2000)
-            #     server.send_message(msg)
-            #     logger.info(3000)
-            #     logger.info("Email sent successfully to recipient: {}".format(guardian_email))
-            #     return "Email sent successfully!"
+            with smtplib.SMTP(_smtp_server, _smtp_port) as server:
+                server.starttls()
+                server.login(_username, os.getenv("SMTP_API_KEY"))
+                server.send_message(msg)
+                logger.info("Email sent successfully to recipient: {}".format(guardian_email))
+                return "Email sent successfully!"
         except Exception as e:
             logger.info(f'SMTP ERROR: {e}')
