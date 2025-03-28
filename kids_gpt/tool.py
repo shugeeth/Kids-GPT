@@ -62,6 +62,7 @@ def notify_dependents(
         logger.info(os.getenv("SMTP_API_KEY"))
 
         try:
+            logger.info('Outside With Block')
             with smtplib.SMTP(_smtp_server, _smtp_port) as server:
                 logger.info('0000')
                 logger.info(server)
