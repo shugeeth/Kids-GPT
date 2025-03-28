@@ -61,9 +61,12 @@ def notify_dependents(
         logger.info(_username)
         logger.info(os.getenv("SMTP_API_KEY"))
 
-        with smtplib.SMTP(_smtp_server, _smtp_port) as server:
-            server.starttls()
-            server.login(_username, os.getenv("SMTP_API_KEY"))
-            server.send_message(msg)
-            logger.info("Email sent successfully to recipient: {}".format(guardian_email))
-            return "Email sent successfully!"
+        try:
+            with smtplib.SMTP(_smtp_server, _smtp_port) as server:
+                server.starttls()
+                server.login(_username, os.getenv("SMTP_API_KEY"))
+                server.send_message(msg)
+                logger.info("Email sent successfully to recipient: {}".format(guardian_email))
+                return "Email sent successfully!"
+        except Exception as e:
+            logger.info(f'SMTP ERROR: {e}')
