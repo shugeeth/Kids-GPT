@@ -80,8 +80,9 @@ with gr.Blocks(title='SafeChat Junior') as demo:
                 )
                 submit_btn = gr.Button("Submit", scale=1, size="lg")  # Proportional sizing
 
+            gr.Markdown("## Characteristics")
             # Placeholder for character tabs
-            character_tabs_display = gr.Markdown("### Characteristics")
+            character_tabs_display = gr.Markdown("Have a conversation to see traits!")
 
             # Call respond function, passing in states for messages and thread_id
             user_input.submit(
