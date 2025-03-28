@@ -1,3 +1,7 @@
+# Build and run commands
+# docker build -t safe-chat-junior .
+# docker run -p 7860:7860 --name scj --env-file ./.env safe-chat-junior
+
 # Use Python 3.12 slim image
 FROM python:3.12-slim
 
