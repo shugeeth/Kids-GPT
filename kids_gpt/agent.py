@@ -51,7 +51,7 @@ class Agent:
 
     @property
     def graph(self) -> CompiledGraph:
-        return self._workflow.compile(checkpointer=_checkpointer)
+        return self._workflow.compile()
 
     def start(self, state: State):
         return state
